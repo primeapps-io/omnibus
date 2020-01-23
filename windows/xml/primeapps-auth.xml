@@ -1,0 +1,19 @@
+<service>
+  <id>PrimeApps-Auth</id>
+  <name>PrimeApps-Auth</name>
+  <description>PrimeApps-Auth</description>
+  <executable>dotnet</executable>
+  <env name="ASPNETCORE_ENVIRONMENT" value="Development"/>
+  <env name="ConnectionStrings__AuthDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"/>
+  <env name="ConnectionStrings__TenantDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=dev;command timeout=0;keepalive=30;maximum pool size=1000;"/>
+  <env name="ConnectionStrings__PlatformDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"/>
+  <env name="AppSettings__StorageUrl" value="{{DOMAIN_STORAGE}}"/>
+  <env name="AppSettings__StorageAccessKey" value="{{STORAGE_ACCESSKEY}}"/>
+  <env name="AppSettings__StorageSecretKey" value="{{STORAGE_SECRETKEY}}"/>
+  <env name="AppSettings__Authority" value="{{DOMAIN_AUTH}}"/>
+  <env name="AppSettings__ForwardHeaders" value="true"/>
+  <env name="AppSettings__HttpsRedirection" value="{{HTTPS_REDIRECTION}}"/>
+  <env name="AppSettings__SentryDsn" value="{{SENTRY_DSN_AUTH}}"/>
+  <arguments>{{PRE_ROOT}}/Auth/PrimeApps.Auth.dll --urls="http://localhost:{{PORT_AUTH}}"</arguments>
+  <logmode>rotate</logmode>
+</service>
