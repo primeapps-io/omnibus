@@ -4,6 +4,4 @@
   <description>Nginx</description>
   <executable>nginx.exe</executable>
   <logmode>rotate</logmode>
-  <depend></depend>
-  <stopargument>nginx.exe -s stop</stopargument>
 </service>
