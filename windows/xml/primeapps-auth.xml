@@ -14,6 +14,6 @@
   <env name="AppSettings__ForwardHeaders" value="true"/>
   <env name="AppSettings__HttpsRedirection" value="{{HTTPS_REDIRECTION}}"/>
   <env name="AppSettings__SentryDsn" value="{{SENTRY_DSN_AUTH}}"/>
-  <arguments>{{PRE_ROOT}}/Auth/PrimeApps.Auth.dll --urls="http://localhost:{{PORT_AUTH}}"</arguments>
+  <arguments>{{PRE_ROOT}}/PrimeApps.Auth/PrimeApps.Auth.dll --urls="http://localhost:{{PORT_AUTH}}"</arguments>
   <logmode>rotate</logmode>
 </service>
