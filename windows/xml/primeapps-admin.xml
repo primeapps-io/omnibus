@@ -21,6 +21,6 @@
   <env name="AppSettings__PostgresPath" value="{{PRE_ROOT}}/programs/pgsql/bin/"/>
   <env name="AppSettings__DataDirectory" value="{{PRE_ROOT}}/data"/>
   <env name="AppSettings__SentryDsn" value="{{SENTRY_DSN_ADMIN}}"/>
-  <arguments>{{PRE_ROOT}}/PrimeApps.Admin/PrimeApps.Admin.dll --urls="http://localhost:{{PORT_ADMIN}}"</arguments>
+  <arguments>{{PRE_ROOT}}/PrimeApps.Admin/PrimeApps.Admin.dll --urls="http://localhost:{{PORT_ADMIN}}" --run-as-service</arguments>
   <logmode>rotate</logmode>
 </service>

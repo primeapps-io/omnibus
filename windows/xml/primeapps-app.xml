@@ -25,6 +25,6 @@
   <env name="AppSettings__GoogleMapsApiKey" value="{{GOOGLEMAPS_APIKEY}}"/>
   <env name="AppSettings__AsposeLicence" value="{{ASPOSE_LICENCE}}"/>
   <env name="AppSettings__SentryDsn" value="{{SENTRY_DSN_APP}}"/>
-  <arguments>{{PRE_ROOT}}/PrimeApps.App/PrimeApps.App.dll --urls="http://localhost:{{PORT_APP}}"</arguments>
+  <arguments>{{PRE_ROOT}}/PrimeApps.App/PrimeApps.App.dll --urls="http://localhost:{{PORT_APP}}" --run-as-service</arguments>
   <logmode>rotate</logmode>
 </service>

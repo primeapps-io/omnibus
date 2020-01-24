@@ -146,21 +146,21 @@ sed -i $'/#gzip  on;/a \\\tserver_names_hash_bucket_size 64;\\\n\tinclude '"$bas
 # Create Nginx configurations for PrimeApps
 cd "$basePath/nginx/conf.d"
 
-cp "$basePath/nginx.conf" primapps-auth.conf
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" primapps-auth.conf
-sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_AUTH/g" primapps-auth.conf
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH.conf
+sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH.conf
 
-cp "$basePath/nginx.conf" primapps-app.conf
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_APP/g" primapps-app.conf
-sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_APP/g" primapps-app.conf
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_APP.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_APP/g" $PRIMEAPPS_DOMAIN_APP.conf
+sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_APP/g" $PRIMEAPPS_DOMAIN_APP.conf
 
-cp "$basePath/nginx.conf" primapps-admin.conf
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_ADMIN/g" primapps-admin.conf
-sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" primapps-admin.conf
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_ADMIN.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
+sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
 
-cp "$basePath/nginx.conf" primapps-storage.conf
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" primapps-storage.conf
-sed -i "s/{{PORT}}/9004/g" primapps-storage.conf
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_STORAGE.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
+sed -i "s/{{PORT}}/9004/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
 
 # TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in .conf files
 
