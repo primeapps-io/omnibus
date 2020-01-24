@@ -48,9 +48,14 @@ cd "$basePathPre/programs/pgsql/bin"
 net stop "Postgres-PrimeApps"
 sleep 3 # Sleep 3 seconds to stop Postgres service
 cd "$basePathPre/data/pgsql_pre"
+
 sed -i -e '$a\
 host    all             all              0.0.0.0/0              md5\
 host    all             all              ::/0                   md5' pg_hba.conf
+
+sed -i -e '$a\
+listen_addresses = '"'"'*'"'"'' postgresql.conf
+
 net start "Postgres-PrimeApps"
 
 # Change Redis password
