@@ -11,7 +11,6 @@ basePathPre="$basePath/pre"
 basePathPreEscape=${basePathPre//\//\\/} # escape slash
 basePathServices="$basePath/services"
 version="latest"
-fileNginx=http://nginx.org/download/nginx-1.16.1.zip
 
 for i in "$@"
 do
@@ -25,17 +24,40 @@ case $i in
 esac
 done
 
+if [ "$version" == "latest" ] ; then
+    version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+fi
+
+fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
+fileDatabase="https://github.com/primeapps-io/pre/releases/download/$version/database.zip"
+fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
+fileApp="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"
+fileAdmin="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"
+fileNginx="http://nginx.org/download/nginx-1.16.1.zip"
+
 # Load environment variables from .env file
 echo -e "${GREEN}Loading environment variables from .env file...${NC}"
-export $(egrep -v '^#' .env | xargs)
+set -a
+[[ -f .env ]] && . .env
+set +a
 
-# Clone pre git repository
-echo -e "${GREEN}Cloning pre git repository...${NC}"
-git clone https://github.com/primeapps-io/pre.git
+# Download PRE
+echo -e "${GREEN}Downloading PRE...${NC}"
+mkdir pre
+cd pre
+curl $fileSetup -L --output setup.zip
+curl $fileDatabase -L --output database.zip
+curl $fileAuth -L --output PrimeApps.Auth.zip
+curl $fileApp -L --output PrimeApps.App.zip
+curl $fileAdmin -L --output PrimeApps.Admin.zip
 
-if [ -z $version ] ; then
-   git checkout "v$version"
-fi
+# Unzip PRE
+echo -e "${GREEN}Unzipping PRE...${NC}"
+unzip setup.zip
+unzip database.zip
+unzip PrimeApps.Auth.zip -d PrimeApps.Auth
+unzip PrimeApps.App.zip -d PrimeApps.App
+unzip PrimeApps.Admin.zip -d PrimeApps.Admin
 
 # Install pre
 echo -e "${GREEN}Installing pre...${NC}"
@@ -73,6 +95,7 @@ sed -i "s/MINIO_ACCESS_KEY/MINIO_ACCESS_KEY_OLD/g" minio-pre.xml
 sed -i "s/MINIO_SECRET_KEY/MINIO_SECRET_KEY_OLD/g" minio-pre.xml
 sed -i $'/storage-secret-key/a \\\t<env name="MINIO_ACCESS_KEY" value="'"$PRIMEAPPS_STORAGE_ACCESSKEY"'"\/>' minio-pre.xml
 sed -i $'/MINIO_ACCESS_KEY"/a \\\t<env name="MINIO_SECRET_KEY" value="'"$PRIMEAPPS_STORAGE_SECRETKEY"'"\/>' minio-pre.xml
+net start "Minio-PrimeApps"
 
 # Create PrimeApps services
 mkdir $basePathServices
