@@ -65,6 +65,15 @@ sleep 3 # Sleep 3 seconds to stop Redis service
 sed -i "s/{{# requirepass foobared}}/requirepass ${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" redis.windows.conf
 net start "Redis-PrimeApps"
 
+# Change Minio password
+cd "$basePathPre/programs/minio"
+net stop "Minio-PrimeApps"
+sleep 3 # Sleep 3 seconds to stop Minio service
+sed -i "s/MINIO_ACCESS_KEY/MINIO_ACCESS_KEY_OLD/g" minio-pre.xml
+sed -i "s/MINIO_SECRET_KEY/MINIO_SECRET_KEY_OLD/g" minio-pre.xml
+sed -i $'/storage-secret-key/a \\\t<env name="MINIO_ACCESS_KEY" value="'"$PRIMEAPPS_STORAGE_ACCESSKEY"'"\/>' minio-pre.xml
+sed -i $'/MINIO_ACCESS_KEY"/a \\\t<env name="MINIO_SECRET_KEY" value="'"$PRIMEAPPS_STORAGE_SECRETKEY"'"\/>' minio-pre.xml
+
 # Create PrimeApps services
 mkdir $basePathServices
 cd $basePathServices
