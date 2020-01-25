@@ -228,4 +228,7 @@ if [ "$backupDatabase" = "true" ] ; then
     echo -e "${GREEN}Creating database backup...${NC}"
 fi
 
+# Save version
+echo $version > .version
+
 echo -e "${CYAN}Completed${NC}"
