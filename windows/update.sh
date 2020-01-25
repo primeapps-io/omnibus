@@ -76,6 +76,7 @@ net start "PrimeApps-Admin"
 # TODO: Run migrator here
 
 # Save version
+cd $basePath
 echo $version >> .version
 
 echo -e "${CYAN}Completed${NC}"

@@ -229,6 +229,7 @@ if [ "$backupDatabase" = "true" ] ; then
 fi
 
 # Save version
+cd $basePath
 echo $version > .version
 
 echo -e "${CYAN}Completed${NC}"
