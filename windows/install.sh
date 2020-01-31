@@ -28,18 +28,34 @@ if [ "$version" == "latest" ] ; then
     version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 fi
 
+if [[ ! $version == v* ]]; then
+    version="v$version"
+fi
+
 fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
 fileDatabase="https://github.com/primeapps-io/pre/releases/download/$version/database.zip"
 fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
 fileApp="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"
 fileAdmin="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"
 fileNginx="http://nginx.org/download/nginx-1.16.1.zip"
+urlScheme="http://"
 
 # Load environment variables from .env file
 echo -e "${GREEN}Loading environment variables from .env file...${NC}"
 set -a
 [[ -f .env ]] && . .env
 set +a
+
+# Set proxy url if http proxy is enabled
+if [ "$PRIMEAPPS_PROXY_USE" = "true" ] ; then
+    export http_proxy="$PRIMEAPPS_PROXY_URL"
+    export https_proxy="$PRIMEAPPS_PROXY_URL"
+fi
+
+# Set url scheme
+if [ "$PRIMEAPPS_SSL_USE" = "true" ] ; then
+    urlScheme="https://"
+fi
 
 # Download PRE
 echo -e "${GREEN}Downloading PRE...${NC}"
@@ -59,8 +75,8 @@ unzip PrimeApps.Auth.zip -d PrimeApps.Auth
 unzip PrimeApps.App.zip -d PrimeApps.App
 unzip PrimeApps.Admin.zip -d PrimeApps.Admin
 
-# Install pre
-echo -e "${GREEN}Installing pre...${NC}"
+# Install PRE
+echo -e "${GREEN}Installing PRE...${NC}"
 cd "$basePathPre/setup"
 ./install.sh
 
@@ -71,6 +87,7 @@ net stop "Postgres-PrimeApps"
 sleep 3 # Sleep 3 seconds to stop Postgres service
 cd "$basePathPre/data/pgsql_pre"
 
+# Update Postgres settings for production use
 sed -i -e '$a\
 host    all             all              0.0.0.0/0              md5\
 host    all             all              ::/0                   md5' pg_hba.conf
@@ -78,13 +95,15 @@ host    all             all              ::/0                   md5' pg_hba.conf
 sed -i -e '$a\
 listen_addresses = '"'"'*'"'"'' postgresql.conf
 
+sed -i "s/max_connections = 100/max_connections = 10000/g" postgresql.conf
+
 net start "Postgres-PrimeApps"
 
 # Change Redis password
 cd "$basePathPre/data/redis_pre"
 net stop "Redis-PrimeApps"
 sleep 3 # Sleep 3 seconds to stop Redis service
-sed -i "s/{{# requirepass foobared}}/requirepass ${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" redis.windows.conf
+sed -i "s/# requirepass foobared/requirepass ${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" redis.windows.conf
 net start "Redis-PrimeApps"
 
 # Change Minio password
@@ -107,13 +126,14 @@ cp "$basePathPre/programs/winsw/winsw.exe" primeapps-auth.exe
 cp "$basePath/xml/primeapps-auth.xml" primeapps-auth.xml
 
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-auth.xml
+sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-auth.xml
 sed -i "s/{{PORT_AUTH}}/$PRIMEAPPS_PORT_AUTH/g" primeapps-auth.xml
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-auth.xml
 sed -i "s/{{DOMAIN_AUTH}}/$PRIMEAPPS_DOMAIN_AUTH/g" primeapps-auth.xml
 sed -i "s/{{DOMAIN_STORAGE}}/$PRIMEAPPS_DOMAIN_STORAGE/g" primeapps-auth.xml
 sed -i "s/{{STORAGE_ACCESSKEY}}/${PRIMEAPPS_STORAGE_ACCESSKEY//\//\\/}/g" primeapps-auth.xml
 sed -i "s/{{STORAGE_SECRETKEY}}/${PRIMEAPPS_STORAGE_SECRETKEY//\//\\/}/g" primeapps-auth.xml
-sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_HTTPS_REDIRECTION/g" primeapps-auth.xml
+sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-auth.xml
 sed -i "s/{{SENTRY_DSN_AUTH}}/${PRIMEAPPS_SENTRY_DSN_AUTH//\//\\/}/g" primeapps-auth.xml
 
 ./primeapps-auth.exe install
@@ -124,6 +144,7 @@ cp "$basePathPre/programs/winsw/winsw.exe" primeapps-app.exe
 cp "$basePath/xml/primeapps-app.xml" primeapps-app.xml
 
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-app.xml
+sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-app.xml
 sed -i "s/{{PORT_APP}}/$PRIMEAPPS_PORT_APP/g" primeapps-app.xml
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-app.xml
 sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-app.xml
@@ -140,7 +161,7 @@ sed -i "s/{{SMTP_USER}}/$PRIMEAPPS_SMTP_USER/g" primeapps-app.xml
 sed -i "s/{{SMTP_PASSWORD}}/${PRIMEAPPS_SMTP_PASSWORD//\//\\/}/g" primeapps-app.xml
 sed -i "s/{{CLIENT_ID_APP}}/$PRIMEAPPS_CLIENT_ID_APP/g" primeapps-app.xml
 sed -i "s/{{CLIENT_SECRET_APP}}/${PRIMEAPPS_CLIENT_SECRET_APP//\//\\/}/g" primeapps-app.xml
-sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_HTTPS_REDIRECTION/g" primeapps-app.xml
+sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-app.xml
 sed -i "s/{{GOOGLEMAPS_APIKEY}}/${PRIMEAPPS_GOOGLEMAPS_APIKEY//\//\\/}/g" primeapps-app.xml
 sed -i "s/{{ASPOSE_LICENCE}}/${PRIMEAPPS_ASPOSE_LICENCE//\//\\/}/g" primeapps-app.xml
 sed -i "s/{{SENTRY_DSN_APP}}/${PRIMEAPPS_SENTRY_DSN_APP//\//\\/}/g" primeapps-app.xml
@@ -153,6 +174,7 @@ cp "$basePathPre/programs/winsw/winsw.exe" primeapps-admin.exe
 cp "$basePath/xml/primeapps-admin.xml" primeapps-admin.xml
 
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-admin.xml
+sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-admin.xml
 sed -i "s/{{PORT_ADMIN}}/$PRIMEAPPS_PORT_ADMIN/g" primeapps-admin.xml
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-admin.xml
 sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-admin.xml
@@ -163,7 +185,10 @@ sed -i "s/{{STORAGE_SECRETKEY}}/${PRIMEAPPS_STORAGE_SECRETKEY//\//\\/}/g" primea
 sed -i "s/{{ENABLE_JOBS_ADMIN}}/$PRIMEAPPS_ENABLE_JOBS_ADMIN/g" primeapps-admin.xml
 sed -i "s/{{CLIENT_ID_ADMIN}}/$PRIMEAPPS_CLIENT_ID_ADMIN/g" primeapps-admin.xml
 sed -i "s/{{CLIENT_SECRET_ADMIN}}/${PRIMEAPPS_CLIENT_SECRET_ADMIN//\//\\/}/g" primeapps-admin.xml
-sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_HTTPS_REDIRECTION/g" primeapps-admin.xml
+sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-admin.xml
+sed -i "s/{{PROXY_USE}}/$PROXY_USE/g" primeapps-admin.xml
+sed -i "s/{{PROXY_URL}}/$PROXY_URL/g" primeapps-admin.xml
+sed -i "s/{{PROXY_VALIDATE_CERTIFICATE}}/$PROXY_VALIDATE_CERTIFICATE/g" primeapps-admin.xml
 sed -i "s/{{SENTRY_DSN_ADMIN}}/${PRIMEAPPS_SENTRY_DSN_ADMIN//\//\\/}/g" primeapps-admin.xml
 
 ./primeapps-admin.exe install

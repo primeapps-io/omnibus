@@ -37,4 +37,7 @@ rm -rf "$basePath/services"
 echo -e "${GREEN}Deleting $basePath/nginx.zip...${NC}"
 rm "$basePath/nginx.zip"
 
+echo -e "${GREEN}Deleting $basePath/.version...${NC}"
+rm "$basePath/.version"
+
 echo -e "${CYAN}Completed${NC}"
