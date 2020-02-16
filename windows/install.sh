@@ -12,6 +12,7 @@ basePathPreEscape=${basePathPre//\//\\/} # escape slash
 basePathServices="$basePath/services"
 version="latest"
 
+# Get parameters
 for i in "$@"
 do
 case $i in
@@ -24,14 +25,17 @@ case $i in
 esac
 done
 
+# Set latest PRE version number
 if [ "$version" == "latest" ] ; then
     version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 fi
 
+# Add "v" prefix to version
 if [[ ! $version == v* ]]; then
     version="v$version"
 fi
 
+# Variables
 fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
 fileDatabase="https://github.com/primeapps-io/pre/releases/download/$version/database.zip"
 fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
@@ -80,7 +84,8 @@ echo -e "${GREEN}Installing PRE...${NC}"
 cd "$basePathPre/setup"
 ./install.sh
 
-# Change Postgres password
+# Set Postgres password
+echo -e "${GREEN}Updating Postgres settings...${NC}"
 cd "$basePathPre/programs/pgsql/bin"
 ./psql -d postgres -p 5436 -c "ALTER USER postgres WITH PASSWORD '${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}';"
 net stop "Postgres-PrimeApps"
@@ -99,14 +104,14 @@ sed -i "s/max_connections = 100/max_connections = 10000/g" postgresql.conf
 
 net start "Postgres-PrimeApps"
 
-# Change Redis password
+# Set Redis password
 cd "$basePathPre/data/redis_pre"
 net stop "Redis-PrimeApps"
 sleep 3 # Sleep 3 seconds to stop Redis service
 sed -i "s/# requirepass foobared/requirepass ${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" redis.windows.conf
 net start "Redis-PrimeApps"
 
-# Change Minio password
+# Set Minio access and secret keys
 cd "$basePathPre/programs/minio"
 net stop "Minio-PrimeApps"
 sleep 3 # Sleep 3 seconds to stop Minio service
@@ -206,7 +211,10 @@ cd "$basePath/nginx/conf"
 sed -i $'/#gzip  on;/a \\\tserver_names_hash_bucket_size 64;\\\n\tinclude '"$basePath"'/nginx/conf.d/*.conf;' nginx.conf
 
 # Create Nginx configurations for PrimeApps
+echo -e "${GREEN}Creating Nginx configurations...${NC}"
 cd "$basePath/nginx/conf.d"
+
+# TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in $basePath/nginx.conf files
 
 cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH.conf
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH.conf
@@ -223,8 +231,6 @@ sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
 cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_STORAGE.conf
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
 sed -i "s/{{PORT}}/9004/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
-
-# TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in .conf files
 
 # Create Nginx service
 echo -e "${GREEN}Creating nginx service...${NC}"
