@@ -1,6 +1,4 @@
 #!/bin/bash
-#Usage: ./install-linux.sh username
-
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
 BLUE='\033[0;34m'
@@ -8,14 +6,14 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 # Variables
-su_user=$(id -un)
-user=$(logname)
 basePath=$(pwd -LP)
 basePathPre="$basePath/pre"
 basePathPreEscape=${basePathPre//\//\\/} # escape slash
 basePathServices="$basePath/services"
 version="latest"
+user=$(logname)
 
+# Get parameters
 for i in "$@"
 do
 case $i in
@@ -28,14 +26,17 @@ case $i in
 esac
 done
 
+# Set latest PRE version number
 if [ "$version" == "latest" ] ; then
     version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
 fi
 
+# Add "v" prefix to version
 if [[ ! $version == v* ]]; then
     version="v$version"
 fi
 
+# Variables
 fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
 fileDatabase="https://github.com/primeapps-io/pre/releases/download/$version/database.zip"
 fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
@@ -65,46 +66,36 @@ echo -e "${GREEN}Installing dependencies${NC}"
 apt -v &> /dev/null && apt install -y nginx dotnet-runtime-2.2
 which yum &> /dev/null && yum install -y nginx dotnet-runtime-2.2
 
+# Download PRE
+echo -e "${GREEN}Downloading PRE...${NC}"
 mkdir pre
 cd pre
-echo -e "${GREEN}Downloading PRE...${NC}"
-if [ ! -f "setup.zip" ]; then 
 curl $fileSetup -L --output setup.zip
-fi
-if [ ! -f "database.zip" ]; then 
 curl $fileDatabase -L --output database.zip
-fi
-if [ ! -f "PrimeApps.App.zip" ]; then 
-curl $fileApp -L --output PrimeApps.App.zip
-fi
-if [ ! -f "PrimeApps.Auth.zip" ]; then
 curl $fileAuth -L --output PrimeApps.Auth.zip
-fi
-if [ ! -f "PrimeApps.Admin.zip" ]; then
+curl $fileApp -L --output PrimeApps.App.zip
 curl $fileAdmin -L --output PrimeApps.Admin.zip
-fi
 
 # Unzip PRE
 echo -e "${GREEN}Unzipping PRE...${NC}"
-unzip PrimeApps.App.zip -d PrimeApps.App
-chown iboware --recursive PrimeApps.App
-
-unzip PrimeApps.Auth.zip -d PrimeApps.Auth
-chown iboware --recursive PrimeApps.Auth
-
-unzip PrimeApps.Admin.zip -d PrimeApps.Admin
-chown iboware --recursive PrimeApps.Admin
-
 unzip setup.zip
 unzip database.zip
+unzip PrimeApps.App.zip -d PrimeApps.App
+unzip PrimeApps.Auth.zip -d PrimeApps.Auth
+unzip PrimeApps.Admin.zip -d PrimeApps.Admin
+
+# Set file ownership
+chown $user --recursive PrimeApps.App
+chown $user --recursive PrimeApps.Auth
+chown $user --recursive PrimeApps.Admin
 
 # Install PRE
 echo -e "${GREEN}Installing PRE...${NC}"
 cd "$basePathPre/setup"
 ./install.sh
 
-# Change Postgres password
-echo -e "${GREEN}Updating PRE...${NC}"
+# Set Postgres password
+echo -e "${GREEN}Updating Postgres settings...${NC}"
 cd "$basePathPre/programs/pgsql/bin"
 passwordEscape=${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}
 passwordEscape="'${passwordEscape}'"
@@ -123,7 +114,7 @@ listen_addresses = '"'"'*'"'"'' postgresql.conf
 
 sed -i "s/max_connections = 100/max_connections = 10000/g" postgresql.conf
 
-# Change Redis password
+# Set Redis password
 cd "$basePathPre/data/redis_pre"
 systemctl stop redis-pre.service
 sed -i "s/# requirepass foobared/requirepass ${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" redis.conf
@@ -132,7 +123,7 @@ sed -i "s/dir ./\\dir ${basePathPreEscape}\data\redis_pre/g" redis.conf
 systemctl daemon-reload
 systemctl start redis-pre.service
 
-# Change Minio password
+# Set Minio access and secret keys
 cd "$basePathPre/programs/minio"
 systemctl stop minio-pre.service
 sleep 3 # Sleep 3 seconds to stop Minio service
@@ -143,8 +134,8 @@ sed -i $'/MINIO_ACCESS_KEY"/a \\\t<env name="MINIO_SECRET_KEY" value="'"$PRIMEAP
 systemctl daemon-reload
 systemctl start minio-pre.service
 
-echo -e "${GREEN}Creating Auth Service ${NC}"
-
+# Create primeapps-auth service
+echo -e "${GREEN}Creating primeapps-auth service...${NC}"
 cp "$basePathPre/setup/service/primeapps-auth.service" primeapps-auth.service
 sed -i "s/{{USER}}/$user/g" primeapps-auth.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-auth.service
@@ -162,8 +153,8 @@ cp primeapps-auth.service /etc/systemd/system/primeapps-auth.service
 systemctl start primeapps-auth.service
 systemctl enable primeapps-auth.service
 
-echo -e "${GREEN}Creating App Service ${NC}"
-
+# Create primeapps-app service
+echo -e "${GREEN}Creating primeapps-app service...${NC}"
 cp "$basePathPre/setup/service/primeapps-app.service" primeapps-app.service
 sed -i "s/{{USER}}/$user/g" primeapps-app.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-app.service
@@ -193,8 +184,8 @@ cp primeapps-app.service /etc/systemd/system/primeapps-app.service
 systemctl start primeapps-app.service
 systemctl enable primeapps-app.service
 
-echo -e "${GREEN}Creating Admin Service ${NC}"
-
+# Create primeapps-admin service
+echo -e "${GREEN}Creating primeapps-admin service...${NC}"
 cp "$basePathPre/setup/service/primeapps-admin.service" primeapps-admin.service
 sed -i "s/{{USER}}/$user/g" primeapps-admin.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-admin.service
@@ -216,38 +207,35 @@ cp primeapps-admin.service /etc/systemd/system/primeapps-admin.service
 systemctl start primeapps-admin.service
 systemctl enable primeapps-admin.service
 
-echo -e "${GREEN}Creating Auth Website ${NC}"
+# Create Nginx configurations for PrimeApps
+echo -e "${GREEN}Creating Nginx configurations...${NC}"
 
-cp "$basePathPre/setup/nginx/proxy-pass" $PRIMEAPPS_DOMAIN_AUTH
+# TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in $basePath/nginx.conf files
+
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
 sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
 cp $PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH
 sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_AUTH
 
-echo -e "${GREEN}Creating App Website ${NC}"
-
-cp "$basePathPre/setup/nginx/proxy-pass" $PRIMEAPPS_DOMAIN_APP
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_APP
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_APP/g" $PRIMEAPPS_DOMAIN_APP
 sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_APP/g" $PRIMEAPPS_DOMAIN_APP
 cp $PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP
 sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_APP
 
-echo -e "${GREEN}Creating Admin Website ${NC}"
-
-cp "$basePathPre/setup/nginx/proxy-pass" $PRIMEAPPS_DOMAIN_ADMIN
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_ADMIN
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN
 sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN
 cp $PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN
 sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_ADMIN
 
-cp "$basePathPre/setup/nginx/proxy-pass" $PRIMEAPPS_DOMAIN_STORAGE
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_STORAGE
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" $PRIMEAPPS_DOMAIN_STORAGE
 sed -i "s/{{PORT}}/9004/g" $PRIMEAPPS_DOMAIN_STORAGE
 sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_STORAGE
 
 systemctl daemon-reload
-# TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in .conf files
-
 
 # TODO: backup database with pgBackRest
 if [ "$backupDatabase" = "true" ] ; then
