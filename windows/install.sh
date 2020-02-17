@@ -11,6 +11,13 @@ basePathPre="$basePath/pre"
 basePathPreEscape=${basePathPre//\//\\/} # escape slash
 basePathServices="$basePath/services"
 version="latest"
+urlScheme="http://"
+fileSetup=${PRIMEAPPS_FILE_SETUP:-"http://file.primeapps.io/pre/setup.zip"}
+fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"http://file.primeapps.io/pre/database.zip"}
+fileAuth=${PRIMEAPPS_FILE_AUTH:-"http://file.primeapps.io/pre/PrimeApps.Auth.zip"}
+fileApp=${PRIMEAPPS_FILE_APP:-"http://file.primeapps.io/pre/PrimeApps.App.zip"}
+fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"http://file.primeapps.io/pre/PrimeApps.Admin.zip"}
+fileNginx=${PRIMEAPPS_FILE_NGINX:-"http://file.primeapps.io/binaries/win/nginx-1.16.1.zip"}
 
 # Get parameters
 for i in "$@"
@@ -25,24 +32,19 @@ case $i in
 esac
 done
 
-# Set latest PRE version number
-if [ "$version" == "latest" ] ; then
-    version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-fi
-
 # Add "v" prefix to version
 if [[ ! $version == v* ]]; then
     version="v$version"
 fi
 
-# Variables
-fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
-fileDatabase="https://github.com/primeapps-io/pre/releases/download/$version/database.zip"
-fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
-fileApp="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"
-fileAdmin="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"
-fileNginx="http://nginx.org/download/nginx-1.16.1.zip"
-urlScheme="http://"
+# Set latest PRE version number
+if [ ! "$version" == "latest" ] ; then
+    fileSetup=${PRIMEAPPS_FILE_SETUP:-"https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"}
+    fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"https://github.com/primeapps-io/pre/releases/download/$version/database.zip"}
+    fileAuth=${PRIMEAPPS_FILE_AUTH:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"}
+    fileApp=${PRIMEAPPS_FILE_APP:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"}
+    fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"}
+fi
 
 # Load environment variables from .env file
 echo -e "${GREEN}Loading environment variables from .env file...${NC}"
@@ -134,6 +136,7 @@ sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-auth.xml
 sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-auth.xml
 sed -i "s/{{PORT_AUTH}}/$PRIMEAPPS_PORT_AUTH/g" primeapps-auth.xml
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-auth.xml
+sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-auth.xml
 sed -i "s/{{DOMAIN_AUTH}}/$PRIMEAPPS_DOMAIN_AUTH/g" primeapps-auth.xml
 sed -i "s/{{DOMAIN_STORAGE}}/$PRIMEAPPS_DOMAIN_STORAGE/g" primeapps-auth.xml
 sed -i "s/{{STORAGE_ACCESSKEY}}/${PRIMEAPPS_STORAGE_ACCESSKEY//\//\\/}/g" primeapps-auth.xml

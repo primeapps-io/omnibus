@@ -7,6 +7,7 @@
   <env name="ConnectionStrings__AuthDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"/>
   <env name="ConnectionStrings__TenantDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=dev;command timeout=0;keepalive=30;maximum pool size=1000;"/>
   <env name="ConnectionStrings__PlatformDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"/>
+  <env name="ConnectionStrings__RedisConnection" value="localhost:6384,password={{PASSWORD_CACHE}},defaultDatabase=1,syncTimeout=30000"/>
   <env name="AppSettings__StorageUrl" value="{{URL_SCHEME}}{{DOMAIN_STORAGE}}"/>
   <env name="AppSettings__StorageAccessKey" value="{{STORAGE_ACCESSKEY}}"/>
   <env name="AppSettings__StorageSecretKey" value="{{STORAGE_SECRETKEY}}"/>
