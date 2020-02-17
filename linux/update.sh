@@ -9,6 +9,10 @@ NC='\033[0m' # No Color
 basePath=$(pwd -LP)
 basePathPre="$basePath/pre"
 version="latest"
+fileSetup=${PRIMEAPPS_FILE_SETUP:-"http://file.primeapps.io/pre/setup.zip"}
+fileAuth=${PRIMEAPPS_FILE_AUTH:-"http://file.primeapps.io/pre/PrimeApps.Auth.zip"}
+fileApp=${PRIMEAPPS_FILE_APP:-"http://file.primeapps.io/pre/PrimeApps.App.zip"}
+fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"http://file.primeapps.io/pre/PrimeApps.Admin.zip"}
 
 # Get parameters
 for i in "$@"
@@ -23,21 +27,18 @@ case $i in
 esac
 done
 
-# Set latest PRE version number
-if [ "$version" == "latest" ] ; then
-    version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-fi
-
 # Add "v" prefix to version
 if [[ ! $version == v* ]]; then
     version="v$version"
 fi
 
-# Variables
-fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
-fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
-fileApp="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"
-fileAdmin="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"
+# Set versioned download links
+if [ ! "$version" == "latest" ] ; then
+    fileSetup=${PRIMEAPPS_FILE_SETUP:-"https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"}
+    fileAuth=${PRIMEAPPS_FILE_AUTH:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"}
+    fileApp=${PRIMEAPPS_FILE_APP:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"}
+    fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"}
+fi
 
 # Load environment variables from .env file
 echo -e "${GREEN}Loading environment variables from .env file...${NC}"

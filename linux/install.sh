@@ -37,7 +37,7 @@ if [[ ! $version == v* ]]; then
     version="v$version"
 fi
 
-# Set latest PRE version number
+# Set versioned download links
 if [ ! "$version" == "latest" ] ; then
     fileSetup=${PRIMEAPPS_FILE_SETUP:-"https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"}
     fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"https://github.com/primeapps-io/pre/releases/download/$version/database.zip"}
