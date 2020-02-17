@@ -15,7 +15,7 @@ You can easily install the PrimeApps Runtime (PRE) using this package.
 
 #### 1. Download and extract the package
 ```bash
-curl http://file.primeapps.io/omnibus/windows.zip &&
+curl http://file.primeapps.io/omnibus/windows.zip -O &&
 unzip windows.zip
 ```
 
