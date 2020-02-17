@@ -28,7 +28,7 @@ esac
 done
 
 # Add "v" prefix to version
-if [[ ! $version == v* ]]; then
+if [[ ! $version == v* ]] && [ "$version" != "latest" ] ; then
     version="v$version"
 fi
 
