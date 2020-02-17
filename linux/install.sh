@@ -65,10 +65,23 @@ if [ "$version" != "latest" ] ; then
     fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"}
 fi
 
-# Installing dependencies
-echo -e "${GREEN}Installing dependencies${NC}"
-apt -v &> /dev/null && apt install -y nginx dotnet-runtime-2.2
-which yum &> /dev/null && yum install -y nginx dotnet-runtime-2.2
+# Install dependencies - apt
+echo -e "${GREEN}Installing Nginx${NC}"
+apt -v &> /dev/null && apt install -y nginx
+
+echo -e "${GREEN}Installing .NET Runtime 2.2${NC}"
+apt -v &> /dev/null && apt install -y dotnet-runtime-2.2
+
+# Install dependencies - yum
+echo -e "${GREEN}Installing Nginx${NC}"
+which yum &> /dev/null && yum install -y epel-release
+which yum &> /dev/null && yum install -y nginx
+which yum &> /dev/null && sed -i $'/include /etc/nginx/conf.d/*.conf;/a \\\tserver_names_hash_bucket_size 64;\\\n\tinclude /etc/nginx/sites-enabled/*;' /etc/nginx/nginx.conf
+which yum &> /dev/null && systemctl start nginx
+
+echo -e "${GREEN}Installing .NET Runtime 2.2${NC}"
+which yum &> /dev/null && rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+which yum &> /dev/null && yum install -y dotnet-runtime-2.2
 
 # Download PRE
 echo -e "${GREEN}Downloading PRE...${NC}"
@@ -140,7 +153,7 @@ systemctl start minio-pre.service
 
 # Create primeapps-auth service
 echo -e "${GREEN}Creating primeapps-auth service...${NC}"
-cp "$basePathPre/service/primeapps-auth.service" primeapps-auth.service
+cp "$basePath/service/primeapps-auth.service" primeapps-auth.service
 sed -i "s/{{USER}}/$user/g" primeapps-auth.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-auth.service
 sed -i "s/{{PORT_AUTH}}/$PRIMEAPPS_PORT_AUTH/g" primeapps-auth.service
@@ -160,7 +173,7 @@ systemctl enable primeapps-auth.service
 
 # Create primeapps-app service
 echo -e "${GREEN}Creating primeapps-app service...${NC}"
-cp "$basePathPre/service/primeapps-app.service" primeapps-app.service
+cp "$basePath/service/primeapps-app.service" primeapps-app.service
 sed -i "s/{{USER}}/$user/g" primeapps-app.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-app.service
 sed -i "s/{{PORT_APP}}/$PRIMEAPPS_PORT_APP/g" primeapps-app.service
@@ -191,7 +204,7 @@ systemctl enable primeapps-app.service
 
 # Create primeapps-admin service
 echo -e "${GREEN}Creating primeapps-admin service...${NC}"
-cp "$basePathPre/service/primeapps-admin.service" primeapps-admin.service
+cp "$basePath/service/primeapps-admin.service" primeapps-admin.service
 sed -i "s/{{USER}}/$user/g" primeapps-admin.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-admin.service
 sed -i "s/{{PORT_ADMIN}}/$PRIMEAPPS_PORT_ADMIN/g" primeapps-admin.service
@@ -216,6 +229,9 @@ systemctl enable primeapps-admin.service
 echo -e "${GREEN}Creating Nginx configurations...${NC}"
 
 # TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in $basePath/nginx.conf files
+
+mkdir -p /etc/nginx/sites-available
+mkdir -p /etc/nginx/sites-enabled
 
 cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
