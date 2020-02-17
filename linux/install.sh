@@ -12,6 +12,12 @@ basePathPreEscape=${basePathPre//\//\\/} # escape slash
 basePathServices="$basePath/services"
 version="latest"
 user=$(logname)
+urlScheme="http://"
+fileSetup=${PRIMEAPPS_FILE_SETUP:-"http://file.primeapps.io/pre/setup.zip"}
+fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"http://file.primeapps.io/pre/database.zip"}
+fileAuth=${PRIMEAPPS_FILE_AUTH:-"http://file.primeapps.io/pre/PrimeApps.Auth.zip"}
+fileApp=${PRIMEAPPS_FILE_APP:-"http://file.primeapps.io/pre/PrimeApps.App.zip"}
+fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"http://file.primeapps.io/pre/PrimeApps.Admin.zip"}
 
 # Get parameters
 for i in "$@"
@@ -26,23 +32,19 @@ case $i in
 esac
 done
 
-# Set latest PRE version number
-if [ "$version" == "latest" ] ; then
-    version=$(curl -s https://api.github.com/repos/primeapps-io/pre/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
-fi
-
 # Add "v" prefix to version
 if [[ ! $version == v* ]]; then
     version="v$version"
 fi
 
-# Variables
-fileSetup="https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"
-fileDatabase="https://github.com/primeapps-io/pre/releases/download/$version/database.zip"
-fileAuth="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"
-fileApp="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"
-fileAdmin="https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"
-urlScheme="http://"
+# Set latest PRE version number
+if [ ! "$version" == "latest" ] ; then
+    fileSetup=${PRIMEAPPS_FILE_SETUP:-"https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"}
+    fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"https://github.com/primeapps-io/pre/releases/download/$version/database.zip"}
+    fileAuth=${PRIMEAPPS_FILE_AUTH:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"}
+    fileApp=${PRIMEAPPS_FILE_APP:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"}
+    fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"}
+fi
 
 # Load environment variables from .env file
 echo -e "${GREEN}Loading environment variables from .env file...${NC}"
@@ -136,11 +138,12 @@ systemctl start minio-pre.service
 
 # Create primeapps-auth service
 echo -e "${GREEN}Creating primeapps-auth service...${NC}"
-cp "$basePathPre/setup/service/primeapps-auth.service" primeapps-auth.service
+cp "$basePathPre/service/primeapps-auth.service" primeapps-auth.service
 sed -i "s/{{USER}}/$user/g" primeapps-auth.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-auth.service
 sed -i "s/{{PORT_AUTH}}/$PRIMEAPPS_PORT_AUTH/g" primeapps-auth.service
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-auth.service
+sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-auth.service
 sed -i "s/{{DOMAIN_AUTH}}/$PRIMEAPPS_DOMAIN_AUTH/g" primeapps-auth.service
 sed -i "s/{{DOMAIN_STORAGE}}/$PRIMEAPPS_DOMAIN_STORAGE/g" primeapps-auth.service
 sed -i "s/{{STORAGE_ACCESSKEY}}/${PRIMEAPPS_STORAGE_ACCESSKEY//\//\\/}/g" primeapps-auth.service
@@ -155,7 +158,7 @@ systemctl enable primeapps-auth.service
 
 # Create primeapps-app service
 echo -e "${GREEN}Creating primeapps-app service...${NC}"
-cp "$basePathPre/setup/service/primeapps-app.service" primeapps-app.service
+cp "$basePathPre/service/primeapps-app.service" primeapps-app.service
 sed -i "s/{{USER}}/$user/g" primeapps-app.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-app.service
 sed -i "s/{{PORT_APP}}/$PRIMEAPPS_PORT_APP/g" primeapps-app.service
@@ -186,7 +189,7 @@ systemctl enable primeapps-app.service
 
 # Create primeapps-admin service
 echo -e "${GREEN}Creating primeapps-admin service...${NC}"
-cp "$basePathPre/setup/service/primeapps-admin.service" primeapps-admin.service
+cp "$basePathPre/service/primeapps-admin.service" primeapps-admin.service
 sed -i "s/{{USER}}/$user/g" primeapps-admin.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-admin.service
 sed -i "s/{{PORT_ADMIN}}/$PRIMEAPPS_PORT_ADMIN/g" primeapps-admin.service
