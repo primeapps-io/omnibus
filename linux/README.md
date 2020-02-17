@@ -1,4 +1,4 @@
-## PrimeApps Omnibus package for Linux
+## PrimeApps Omnibus Package for Linux
 
 You can easily install the PrimeApps Runtime (PRE) using this package.
 
