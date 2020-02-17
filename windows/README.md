@@ -1,4 +1,4 @@
-## PrimeApps Omnibus Package for Windows
+## PrimeApps Omnibus Package for Windows Server
 
 You can easily install the PrimeApps Runtime (PRE) using this package.
 
