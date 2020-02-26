@@ -29,12 +29,12 @@ esac
 done
 
 # Add "v" prefix to version
-if [[ ! $version == v* ]]; then
+if [[ ! $version == v* ]] && [ "$version" != "latest" ] ; then
     version="v$version"
 fi
 
 # Set versioned download links
-if [ ! "$version" == "latest" ] ; then
+if [ "$version" != "latest" ] ; then
     fileSetup=${PRIMEAPPS_FILE_SETUP:-"https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"}
     fileAuth=${PRIMEAPPS_FILE_AUTH:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"}
     fileApp=${PRIMEAPPS_FILE_APP:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"}
