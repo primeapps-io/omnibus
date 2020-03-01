@@ -28,6 +28,9 @@ Environment=AppSettings__HttpsRedirection="{{HTTPS_REDIRECTION}}"
 Environment=AppSettings__StudioUrl="https://studio.primeapps.io"
 Environment=AppSettings__PostgresPath="{{PRE_ROOT}}/programs/pgsql/bin/"
 Environment=AppSettings__DataDirectory="{{PRE_ROOT}}/data"
+Environment=Proxy__UseProxy="{{PROXY_USE}}"
+Environment=Proxy__ProxyUrl="{{PROXY_URL}}"
+Environment=Proxy__CertificateValidation="{{PROXY_VALIDATE_CERTIFICATE}}"
 Environment=AppSettings__SentryDsn="{{SENTRY_DSN_ADMIN}}"
     
 [Install]
