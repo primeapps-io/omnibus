@@ -196,9 +196,9 @@ sed -i "s/{{ENABLE_JOBS_ADMIN}}/$PRIMEAPPS_ENABLE_JOBS_ADMIN/g" primeapps-admin.
 sed -i "s/{{CLIENT_ID_ADMIN}}/$PRIMEAPPS_CLIENT_ID_ADMIN/g" primeapps-admin.xml
 sed -i "s/{{CLIENT_SECRET_ADMIN}}/${PRIMEAPPS_CLIENT_SECRET_ADMIN//\//\\/}/g" primeapps-admin.xml
 sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-admin.xml
-sed -i "s/{{PROXY_USE}}/$PROXY_USE/g" primeapps-admin.xml
-sed -i "s/{{PROXY_URL}}/$PROXY_URL/g" primeapps-admin.xml
-sed -i "s/{{PROXY_VALIDATE_CERTIFICATE}}/$PROXY_VALIDATE_CERTIFICATE/g" primeapps-admin.xml
+sed -i "s/{{PROXY_USE}}/$PRIMEAPPS_PROXY_USE/g" primeapps-admin.xml
+sed -i "s/{{PROXY_URL}}/$PRIMEAPPS_PROXY_URL/g" primeapps-admin.xml
+sed -i "s/{{PROXY_VALIDATE_CERTIFICATE}}/$PRIMEAPPS_PROXY_VALIDATE_CERTIFICATE/g" primeapps-admin.xml
 sed -i "s/{{SENTRY_DSN_ADMIN}}/${PRIMEAPPS_SENTRY_DSN_ADMIN//\//\\/}/g" primeapps-admin.xml
 
 ./primeapps-admin.exe install
