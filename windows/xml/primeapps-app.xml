@@ -3,7 +3,7 @@
   <name>PrimeApps-App</name>
   <description>PrimeApps-App</description>
   <executable>dotnet</executable>
-  <env name="ASPNETCORE_ENVIRONMENT" value="Development"/>
+  <env name="ASPNETCORE_ENVIRONMENT" value="Production"/>
   <env name="ConnectionStrings__TenantDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=dev;command timeout=0;keepalive=30;maximum pool size=1000;"/>
   <env name="ConnectionStrings__PlatformDBConnection" value="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"/>
   <env name="ConnectionStrings__RedisConnection" value="localhost:6384,password={{PASSWORD_CACHE}},defaultDatabase=1,syncTimeout=30000"/>
