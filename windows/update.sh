@@ -99,10 +99,10 @@ cd setup
 echo -e "${GREEN}Starting primeapps-auth service...${NC}"
 net start "PrimeApps-Auth"
 
-echo -e "${GREEN}Starting primeapps-auth service...${NC}"
+echo -e "${GREEN}Starting primeapps-app service...${NC}"
 net start "PrimeApps-App"
 
-echo -e "${GREEN}Starting primeapps-auth service...${NC}"
+echo -e "${GREEN}Starting primeapps-admin service...${NC}"
 net start "PrimeApps-Admin"
 
 # Save version
