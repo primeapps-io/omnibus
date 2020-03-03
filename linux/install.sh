@@ -219,7 +219,7 @@ sed -i "s/{{CLIENT_ID_ADMIN}}/$PRIMEAPPS_CLIENT_ID_ADMIN/g" primeapps-admin.serv
 sed -i "s/{{CLIENT_SECRET_ADMIN}}/${PRIMEAPPS_CLIENT_SECRET_ADMIN//\//\\/}/g" primeapps-admin.service
 sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-admin.service
 sed -i "s/{{PROXY_USE}}/$PRIMEAPPS_PROXY_USE/g" primeapps-admin.service
-sed -i "s/{{PROXY_URL}}/$PRIMEAPPS_PROXY_URL/g" primeapps-admin.service
+sed -i "s/{{PROXY_URL}}/${PRIMEAPPS_PROXY_URL//\//\\/}/g" primeapps-admin.service
 sed -i "s/{{PROXY_VALIDATE_CERTIFICATE}}/$PRIMEAPPS_PROXY_VALIDATE_CERTIFICATE/g" primeapps-admin.service
 sed -i "s/{{SENTRY_DSN_ADMIN}}/${PRIMEAPPS_SENTRY_DSN_ADMIN//\//\\/}/g" primeapps-admin.service
 
