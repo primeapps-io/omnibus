@@ -213,7 +213,7 @@ mv nginx-1.16.1 nginx
 cd "$basePath/nginx"
 mkdir conf.d
 cd "$basePath/nginx/conf"
-sed -i $'/#gzip  on;/a \\\tserver_names_hash_bucket_size 64;\\\n\tinclude '"$basePath"'/nginx/conf.d/*.conf;' nginx.conf
+sed -i $'/#gzip  on;/a \\\tclient_max_body_size 200m;\\\n\tproxy_buffer_size 16k;\\\n\tproxy_buffers 4 16k;\\\n\tserver_names_hash_bucket_size 64;\\\n\tinclude '"$basePath"'/nginx/conf.d/*.conf;' nginx.conf
 
 # Create Nginx configurations for PrimeApps
 echo -e "${GREEN}Creating Nginx configurations...${NC}"
