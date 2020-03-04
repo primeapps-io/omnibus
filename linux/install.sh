@@ -76,7 +76,7 @@ apt -v &> /dev/null && apt install -y dotnet-runtime-2.2
 echo -e "${GREEN}Installing Nginx${NC}"
 which yum &> /dev/null && yum install -y epel-release
 which yum &> /dev/null && yum install -y nginx
-which yum &> /dev/null && sed -i $'/include /etc/nginx/conf.d/*.conf;/a \\\tserver_names_hash_bucket_size 64;\\\n\tinclude /etc/nginx/sites-enabled/*;' /etc/nginx/nginx.conf
+which yum &> /dev/null && sed -i $'/include /etc/nginx/conf.d/*.conf;/a \\\tclient_max_body_size 200m;\\\n\tproxy_buffer_size 16k;\\\n\tproxy_buffers 4 16k;\\\n\tserver_names_hash_bucket_size 64;\\\n\tinclude /etc/nginx/sites-enabled/*;' /etc/nginx/nginx.conf
 which yum &> /dev/null && systemctl start nginx
 
 echo -e "${GREEN}Installing .NET Runtime 2.2${NC}"
