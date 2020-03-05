@@ -193,6 +193,7 @@ sed -i "s/{{SMTP_PASSWORD}}/${PRIMEAPPS_SMTP_PASSWORD//\//\\/}/g" primeapps-app.
 sed -i "s/{{CLIENT_ID_APP}}/$PRIMEAPPS_CLIENT_ID_APP/g" primeapps-app.service
 sed -i "s/{{CLIENT_SECRET_APP}}/${PRIMEAPPS_CLIENT_SECRET_APP//\//\\/}/g" primeapps-app.service
 sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-app.service
+sed -i "s/{{ENVIRONMENT}}/$PRIMEAPPS_ENVIRONMENT/g" primeapps-app.service
 sed -i "s/{{GOOGLEMAPS_APIKEY}}/${PRIMEAPPS_GOOGLEMAPS_APIKEY//\//\\/}/g" primeapps-app.service
 sed -i "s/{{ASPOSE_LICENCE}}/${PRIMEAPPS_ASPOSE_LICENCE//\//\\/}/g" primeapps-app.service
 sed -i "s/{{SENTRY_DSN_APP}}/${PRIMEAPPS_SENTRY_DSN_APP//\//\\/}/g" primeapps-app.service
