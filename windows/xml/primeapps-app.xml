@@ -22,6 +22,7 @@
   <env name="AppSettings__ClientSecret" value="{{CLIENT_SECRET_APP}}"/>
   <env name="AppSettings__ForwardHeaders" value="true"/>
   <env name="AppSettings__HttpsRedirection" value="{{HTTPS_REDIRECTION}}"/>
+  <env name="AppSettings__Environment" value="{{ENVIRONMENT}}"/>
   <env name="AppSettings__GoogleMapsApiKey" value="{{GOOGLEMAPS_APIKEY}}"/>
   <env name="AppSettings__AsposeLicence" value="{{ASPOSE_LICENCE}}"/>
   <env name="Sentry__Dsn" value="{{SENTRY_DSN_APP}}"/>
