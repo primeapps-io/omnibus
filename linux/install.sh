@@ -164,6 +164,9 @@ sed -i "s/{{DOMAIN_STORAGE}}/$PRIMEAPPS_DOMAIN_STORAGE/g" primeapps-auth.service
 sed -i "s/{{STORAGE_ACCESSKEY}}/${PRIMEAPPS_STORAGE_ACCESSKEY//\//\\/}/g" primeapps-auth.service
 sed -i "s/{{STORAGE_SECRETKEY}}/${PRIMEAPPS_STORAGE_SECRETKEY//\//\\/}/g" primeapps-auth.service
 sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-auth.service
+sed -i "s/{{PROXY_USE}}/$PRIMEAPPS_PROXY_USE/g" primeapps-auth.service
+sed -i "s/{{PROXY_URL}}/${PRIMEAPPS_PROXY_URL//\//\\/}/g" primeapps-auth.service
+sed -i "s/{{PROXY_VALIDATE_CERTIFICATE}}/$PRIMEAPPS_PROXY_VALIDATE_CERTIFICATE/g" primeapps-auth.service
 sed -i "s/{{SENTRY_DSN_AUTH}}/${PRIMEAPPS_SENTRY_DSN_AUTH//\//\\/}/g" primeapps-auth.service
 
 cp primeapps-auth.service /etc/systemd/system/primeapps-auth.service
@@ -196,6 +199,9 @@ sed -i "s/{{HTTPS_REDIRECTION}}/$PRIMEAPPS_SSL_USE/g" primeapps-app.service
 sed -i "s/{{ENVIRONMENT}}/$PRIMEAPPS_ENVIRONMENT/g" primeapps-app.service
 sed -i "s/{{GOOGLEMAPS_APIKEY}}/${PRIMEAPPS_GOOGLEMAPS_APIKEY//\//\\/}/g" primeapps-app.service
 sed -i "s/{{ASPOSE_LICENCE}}/${PRIMEAPPS_ASPOSE_LICENCE//\//\\/}/g" primeapps-app.service
+sed -i "s/{{PROXY_USE}}/$PRIMEAPPS_PROXY_USE/g" primeapps-app.service
+sed -i "s/{{PROXY_URL}}/${PRIMEAPPS_PROXY_URL//\//\\/}/g" primeapps-app.service
+sed -i "s/{{PROXY_VALIDATE_CERTIFICATE}}/$PRIMEAPPS_PROXY_VALIDATE_CERTIFICATE/g" primeapps-app.service
 sed -i "s/{{SENTRY_DSN_APP}}/${PRIMEAPPS_SENTRY_DSN_APP//\//\\/}/g" primeapps-app.service
 
 cp primeapps-app.service /etc/systemd/system/primeapps-app.service

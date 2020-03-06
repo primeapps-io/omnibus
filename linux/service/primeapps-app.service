@@ -33,6 +33,9 @@ Environment=AppSettings__HttpsRedirection="{{HTTPS_REDIRECTION}}"
 Environment=AppSettings__Environment="{{ENVIRONMENT}}"
 Environment=AppSettings__GoogleMapsApiKey="{{GOOGLEMAPS_APIKEY}}"
 Environment=AppSettings__AsposeLicence="{{ASPOSE_LICENCE}}"
+Environment=Proxy__UseProxy="{{PROXY_USE}}"
+Environment=Proxy__ProxyUrl="{{PROXY_URL}}"
+Environment=Proxy__CertificateValidation="{{PROXY_VALIDATE_CERTIFICATE}}"
 Environment=AppSettings__SentryDsn="{{SENTRY_DSN_APP}}"
 
 [Install]

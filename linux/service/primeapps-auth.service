@@ -22,6 +22,9 @@ Environment=AppSettings__StorageSecretKey="{{STORAGE_SECRETKEY}}"
 Environment=AppSettings__Authority="{{DOMAIN_AUTH}}"
 Environment=AppSettings__ForwardHeaders="true"
 Environment=AppSettings__HttpsRedirection="{{HTTPS_REDIRECTION}}"
+Environment=Proxy__UseProxy="{{PROXY_USE}}"
+Environment=Proxy__ProxyUrl="{{PROXY_URL}}"
+Environment=Proxy__CertificateValidation="{{PROXY_VALIDATE_CERTIFICATE}}"
 Environment=AppSettings__SentryDsn="{{SENTRY_DSN_AUTH}}"
 
 [Install]
