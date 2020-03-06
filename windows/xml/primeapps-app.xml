@@ -25,6 +25,9 @@
   <env name="AppSettings__Environment" value="{{ENVIRONMENT}}"/>
   <env name="AppSettings__GoogleMapsApiKey" value="{{GOOGLEMAPS_APIKEY}}"/>
   <env name="AppSettings__AsposeLicence" value="{{ASPOSE_LICENCE}}"/>
+  <env name="Proxy__UseProxy" value="{{PROXY_USE}}"/>
+  <env name="Proxy__ProxyUrl" value="{{PROXY_URL}}"/>
+  <env name="Proxy__CertificateValidation" value="{{PROXY_VALIDATE_CERTIFICATE}}"/>
   <env name="Sentry__Dsn" value="{{SENTRY_DSN_APP}}"/>
   <arguments>{{PRE_ROOT}}/PrimeApps.App/PrimeApps.App.dll --urls="http://localhost:{{PORT_APP}}" --run-as-service</arguments>
   <logmode>rotate</logmode>

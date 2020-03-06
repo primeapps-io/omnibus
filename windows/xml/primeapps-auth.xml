@@ -14,6 +14,9 @@
   <env name="AppSettings__Authority" value="{{URL_SCHEME}}{{DOMAIN_AUTH}}"/>
   <env name="AppSettings__ForwardHeaders" value="true"/>
   <env name="AppSettings__HttpsRedirection" value="{{HTTPS_REDIRECTION}}"/>
+  <env name="Proxy__UseProxy" value="{{PROXY_USE}}"/>
+  <env name="Proxy__ProxyUrl" value="{{PROXY_URL}}"/>
+  <env name="Proxy__CertificateValidation" value="{{PROXY_VALIDATE_CERTIFICATE}}"/>
   <env name="Sentry__Dsn" value="{{SENTRY_DSN_AUTH}}"/>
   <arguments>{{PRE_ROOT}}/PrimeApps.Auth/PrimeApps.Auth.dll --urls="http://localhost:{{PORT_AUTH}}" --run-as-service</arguments>
   <logmode>rotate</logmode>
