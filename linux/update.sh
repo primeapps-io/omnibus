@@ -68,6 +68,17 @@ curl $fileAuth -L --output PrimeApps.Auth.zip
 curl $fileApp -L --output PrimeApps.App.zip
 curl $fileAdmin -L --output PrimeApps.Admin.zip
 
+# Remove PRE (setup) folders
+rm -rf setup
+
+# Unzip PRE (setup)
+echo -e "${GREEN}Unzipping PRE (setup)...${NC}"
+unzip setup.zip
+
+# Run update.sh
+cd "$basePathPre/setup"
+./update.sh --connection-string="server=localhost;port=5436;username=postgres;password=${PRIMEAPPS_PASSWORD_DATABASE//\//\\/};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+
 # Stop PrimeApps services
 echo -e "${GREEN}Stoping primeapps-auth service...${NC}"
 systemctl stop primeapps-auth.service
@@ -78,22 +89,17 @@ systemctl stop primeapps-app.service
 echo -e "${GREEN}Stoping primeapps-auth service...${NC}"
 systemctl stop primeapps-admin.service
 
-# Remove PRE (Auth, App, Admin, setup) folders
-rm -rf setup
+# Remove PRE (Auth, App, Admin) folders
+cd $basePathPre
 rm -rf PrimeApps.Auth
 rm -rf PrimeApps.App
 rm -rf PrimeApps.Admin
 
-# Unzip PRE
-echo -e "${GREEN}Unzipping PRE(Auth, App, Admin)...${NC}"
-unzip setup.zip
+# Unzip PRE (Auth, App, Admin)
+echo -e "${GREEN}Unzipping PRE (Auth, App, Admin)...${NC}"
 unzip PrimeApps.Auth.zip -d PrimeApps.Auth
 unzip PrimeApps.App.zip -d PrimeApps.App
 unzip PrimeApps.Admin.zip -d PrimeApps.Admin
-
-# Run update.sh
-cd setup
-./update.sh --connection-string="server=localhost;port=5436;username=postgres;password=${PRIMEAPPS_PASSWORD_DATABASE//\//\\/};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
 
 # Start PrimeApps services
 echo -e "${GREEN}Starting primeapps-auth service...${NC}"
