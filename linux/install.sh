@@ -280,6 +280,6 @@ fi
 
 # Save version
 cd $basePath
-echo $version > .version
+[[ -f "$basePathPre/setup/.version" ]] && cp "$basePathPre/setup/.version" .version
 
 echo -e "${CYAN}Completed${NC}"

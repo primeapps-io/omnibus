@@ -117,6 +117,6 @@ systemctl start primeapps-admin.service
 
 # Save version
 cd $basePath
-echo $version >> .version
+cp "$basePathPre/setup/.version" .version
 
 echo -e "${CYAN}Completed${NC}"
