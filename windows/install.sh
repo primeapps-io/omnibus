@@ -69,10 +69,15 @@ fi
 echo -e "${GREEN}Downloading PRE...${NC}"
 mkdir pre
 cd pre
+echo -e "${GREEN}Downloading $fileSetup...${NC}"
 curl $fileSetup -L --output setup.zip
+echo -e "${GREEN}Downloading $fileDatabase...${NC}"
 curl $fileDatabase -L --output database.zip
+echo -e "${GREEN}Downloading $fileAuth...${NC}"
 curl $fileAuth -L --output PrimeApps.Auth.zip
+echo -e "${GREEN}Downloading $fileApp...${NC}"
 curl $fileApp -L --output PrimeApps.App.zip
+echo -e "${GREEN}Downloading $fileAdmin...${NC}"
 curl $fileAdmin -L --output PrimeApps.Admin.zip
 
 # Unzip PRE

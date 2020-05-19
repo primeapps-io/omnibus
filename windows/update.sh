@@ -63,9 +63,13 @@ rm PrimeApps.Admin.zip
 
 # Download PRE
 echo -e "${GREEN}Downloading PRE(Auth, App, Admin)...${NC}"
+echo -e "${GREEN}Downloading $fileSetup...${NC}"
 curl $fileSetup -L --output setup.zip
+echo -e "${GREEN}Downloading $fileAuth...${NC}"
 curl $fileAuth -L --output PrimeApps.Auth.zip
+echo -e "${GREEN}Downloading $fileApp...${NC}"
 curl $fileApp -L --output PrimeApps.App.zip
+echo -e "${GREEN}Downloading $fileAdmin...${NC}"
 curl $fileAdmin -L --output PrimeApps.Admin.zip
 
 # Remove PRE (setup) folders
