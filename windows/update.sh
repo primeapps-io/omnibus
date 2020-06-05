@@ -81,7 +81,7 @@ unzip setup.zip
 
 # Run update.sh
 cd "$basePathPre/setup"
-./update.sh --connection-string="server=localhost;port=5436;username=postgres;password=${PRIMEAPPS_PASSWORD_DATABASE//\//\\/};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
+./update.sh --version=$version --connection-string="server=localhost;port=5436;username=postgres;password=${PRIMEAPPS_PASSWORD_DATABASE//\//\\/};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
 
 # Stop PrimeApps services
 echo -e "${GREEN}Stoping primeapps-auth service...${NC}"
