@@ -58,11 +58,11 @@ fileNginx=${PRIMEAPPS_FILE_NGINX:-"http://file.primeapps.io/binaries/win/nginx-1
 
 # Set versioned download links
 if [ "$version" != "latest" ] ; then
-    fileSetup=${PRIMEAPPS_FILE_SETUP:-"https://github.com/primeapps-io/pre/releases/download/$version/setup.zip"}
-    fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"https://github.com/primeapps-io/pre/releases/download/$version/database.zip"}
-    fileAuth=${PRIMEAPPS_FILE_AUTH:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Auth.zip"}
-    fileApp=${PRIMEAPPS_FILE_APP:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.App.zip"}
-    fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"https://github.com/primeapps-io/pre/releases/download/$version/PrimeApps.Admin.zip"}
+    fileSetup=${PRIMEAPPS_FILE_SETUP:-"http://file.primeapps.io/pre/$version/setup.zip"}
+    fileDatabase=${PRIMEAPPS_FILE_DATABASE:-"http://file.primeapps.io/pre/$version/database.zip"}
+    fileAuth=${PRIMEAPPS_FILE_AUTH:-"http://file.primeapps.io/pre/$version/PrimeApps.Auth.zip"}
+    fileApp=${PRIMEAPPS_FILE_APP:-"http://file.primeapps.io/pre/$version/PrimeApps.App.zip"}
+    fileAdmin=${PRIMEAPPS_FILE_ADMIN:-"http://file.primeapps.io/pre/$version/PrimeApps.Admin.zip"}
 fi
 
 # Download PRE
