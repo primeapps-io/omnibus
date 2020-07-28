@@ -2,8 +2,8 @@
 Description=PrimeApps Admin
 
 [Service]
-WorkingDirectory={{PRE_ROOT}}/Admin
-ExecStart=/usr/bin/dotnet {{PRE_ROOT}}/Admin/PrimeApps.Admin.dll --urls="http://localhost:{{PORT_ADMIN}}"
+WorkingDirectory={{PRE_ROOT}}/PrimeApps.Admin
+ExecStart=/usr/bin/dotnet {{PRE_ROOT}}/PrimeApps.Admin/PrimeApps.Admin.dll --urls="http://localhost:{{PORT_ADMIN}}"
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10

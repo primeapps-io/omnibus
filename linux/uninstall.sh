@@ -14,6 +14,7 @@ set +a
 rm /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_APP
 rm /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_AUTH
 rm /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_ADMIN
+rm /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_STORAGE
 
 # Variables
 basePath=$(pwd -LP)
@@ -27,6 +28,7 @@ echo -e "${GREEN}Stoping services...${NC}"
 systemctl stop primeapps-app
 systemctl stop primeapps-admin
 systemctl stop primeapps-auth
+
 
 echo -e "${GREEN}Deleting services...${NC}"
 systemctl disable primeapps-app

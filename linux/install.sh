@@ -8,7 +8,9 @@ NC='\033[0m' # No Color
 # Variables
 basePath=$(pwd -LP)
 basePathPre="$basePath/pre"
+basePathPreRedis="$basePathPre/data/redis_pre"
 basePathPreEscape=${basePathPre//\//\\/} # escape slash
+basePathPreRedisEscape=${basePathPreRedis//\//\\/} # escape slash
 basePathServices="$basePath/services"
 version="latest"
 user=$(logname)
@@ -135,12 +137,15 @@ sed -i -e '$a\
 listen_addresses = '"'"'*'"'"'' postgresql.conf
 
 sed -i "s/max_connections = 100/max_connections = 10000/g" postgresql.conf
+systemctl daemon-reload
+systemctl start postgres-pre.service
+
 
 # Set Redis password
 cd "$basePathPre/data/redis_pre"
 systemctl stop redis-pre.service
 sed -i "s/# requirepass foobared/requirepass ${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" redis.conf
-sed -i "s/dir ./\\dir ${basePathPreEscape}\data\redis_pre/g" redis.conf
+sed -i "s/dir ./\\dir ${basePathPreRedisEscape}/g" redis.conf
 
 systemctl daemon-reload
 systemctl start redis-pre.service
@@ -149,10 +154,8 @@ systemctl start redis-pre.service
 cd "$basePathPre/programs/minio"
 systemctl stop minio-pre.service
 sleep 3 # Sleep 3 seconds to stop Minio service
-sed -i "s/MINIO_ACCESS_KEY/MINIO_ACCESS_KEY_OLD/g" /etc/systemd/system/minio-pre.service
-sed -i "s/MINIO_SECRET_KEY/MINIO_SECRET_KEY_OLD/g" /etc/systemd/system/minio-pre.service
-sed -i $'/storage-secret-key/a \\\t<env name="MINIO_ACCESS_KEY" value="'"$PRIMEAPPS_STORAGE_ACCESSKEY"'"\/>' /etc/systemd/system/minio-pre.service
-sed -i $'/MINIO_ACCESS_KEY"/a \\\t<env name="MINIO_SECRET_KEY" value="'"$PRIMEAPPS_STORAGE_SECRETKEY"'"\/>' /etc/systemd/system/minio-pre.service
+sed -i "s/MINIO_ACCESS_KEY=storage-access-key/MINIO_ACCESS_KEY=$PRIMEAPPS_STORAGE_ACCESSKEY/g" /etc/systemd/system/minio-pre.service
+sed -i "s/MINIO_SECRET_KEY=storage-secret-key/MINIO_SECRET_KEY=$PRIMEAPPS_STORAGE_SECRETKEY/g" /etc/systemd/system/minio-pre.service
 systemctl daemon-reload
 systemctl start minio-pre.service
 
