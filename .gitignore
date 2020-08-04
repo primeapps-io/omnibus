@@ -217,3 +217,5 @@ FakesAssemblies/
 /PrimeApps.App/wwwroot/bundles/
 programs/
 data/
+linux/nginx.conf
+linux/.env

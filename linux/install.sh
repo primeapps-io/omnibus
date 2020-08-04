@@ -11,6 +11,7 @@ basePathPre="$basePath/pre"
 basePathPreRedis="$basePathPre/data/redis_pre"
 basePathPreEscape=${basePathPre//\//\\/} # escape slash
 basePathPreRedisEscape=${basePathPreRedis//\//\\/} # escape slash
+
 basePathServices="$basePath/services"
 version="latest"
 user=$(logname)
@@ -140,7 +141,6 @@ sed -i "s/max_connections = 100/max_connections = 10000/g" postgresql.conf
 systemctl daemon-reload
 systemctl start postgres-pre.service
 
-
 # Set Redis password
 cd "$basePathPre/data/redis_pre"
 systemctl stop redis-pre.service
@@ -153,9 +153,12 @@ systemctl start redis-pre.service
 # Set Minio access and secret keys
 cd "$basePathPre/programs/minio"
 systemctl stop minio-pre.service
+storageSecretKeyEscape="${PRIMEAPPS_STORAGE_SECRETKEY//\//\\/}" # escape slash
 sleep 3 # Sleep 3 seconds to stop Minio service
-sed -i "s/MINIO_ACCESS_KEY=storage-access-key/MINIO_ACCESS_KEY=$PRIMEAPPS_STORAGE_ACCESSKEY/g" /etc/systemd/system/minio-pre.service
-sed -i "s/MINIO_SECRET_KEY=storage-secret-key/MINIO_SECRET_KEY=$PRIMEAPPS_STORAGE_SECRETKEY/g" /etc/systemd/system/minio-pre.service
+sed -i "s/MINIO_ACCESS_KEY/MINIO_ACCESS_KEY_OLD/g" /etc/systemd/system/minio-pre.service
+sed -i "s/MINIO_SECRET_KEY/MINIO_SECRET_KEY_OLD/g" /etc/systemd/system/minio-pre.service
+sed -i $"/storage-secret-key/aEnvironment=MINIO_ACCESS_KEY=$PRIMEAPPS_STORAGE_ACCESSKEY" /etc/systemd/system/minio-pre.service
+sed -i $"/MINIO_ACCESS_KEY/aEnvironment=MINIO_SECRET_KEY=$PRIMEAPPS_STORAGE_SECRETKEY" /etc/systemd/system/minio-pre.service
 systemctl daemon-reload
 systemctl start minio-pre.service
 
@@ -164,6 +167,7 @@ echo -e "${GREEN}Creating primeapps-auth service...${NC}"
 cp "$basePath/service/primeapps-auth.service" primeapps-auth.service
 sed -i "s/{{USER}}/$user/g" primeapps-auth.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-auth.service
+sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-auth.service
 sed -i "s/{{PORT_AUTH}}/$PRIMEAPPS_PORT_AUTH/g" primeapps-auth.service
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-auth.service
 sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-auth.service
@@ -187,6 +191,7 @@ echo -e "${GREEN}Creating primeapps-app service...${NC}"
 cp "$basePath/service/primeapps-app.service" primeapps-app.service
 sed -i "s/{{USER}}/$user/g" primeapps-app.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-app.service
+sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-app.service
 sed -i "s/{{PORT_APP}}/$PRIMEAPPS_PORT_APP/g" primeapps-app.service
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-app.service
 sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-app.service
@@ -222,6 +227,7 @@ echo -e "${GREEN}Creating primeapps-admin service...${NC}"
 cp "$basePath/service/primeapps-admin.service" primeapps-admin.service
 sed -i "s/{{USER}}/$user/g" primeapps-admin.service
 sed -i "s/{{PRE_ROOT}}/$basePathPreEscape/g" primeapps-admin.service
+sed -i "s/{{URL_SCHEME}}/${urlScheme//\//\\/}/g" primeapps-admin.service
 sed -i "s/{{PORT_ADMIN}}/$PRIMEAPPS_PORT_ADMIN/g" primeapps-admin.service
 sed -i "s/{{PASSWORD_DATABASE}}/${PRIMEAPPS_PASSWORD_DATABASE//\//\\/}/g" primeapps-admin.service
 sed -i "s/{{PASSWORD_CACHE}}/${PRIMEAPPS_PASSWORD_CACHE//\//\\/}/g" primeapps-admin.service
@@ -255,24 +261,25 @@ cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
 sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
 cp $PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH
-sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_AUTH
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_AUTH
 
 cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_APP
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_APP/g" $PRIMEAPPS_DOMAIN_APP
 sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_APP/g" $PRIMEAPPS_DOMAIN_APP
 cp $PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP
-sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_APP
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_APP
 
 cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_ADMIN
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN
 sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN
 cp $PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN
-sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_ADMIN
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_ADMIN
 
 cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_STORAGE
 sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" $PRIMEAPPS_DOMAIN_STORAGE
 sed -i "s/{{PORT}}/9004/g" $PRIMEAPPS_DOMAIN_STORAGE
-sudo ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_STORAGE
+cp $PRIMEAPPS_DOMAIN_STORAGE /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_STORAGE
 
 systemctl daemon-reload
 
