@@ -73,7 +73,12 @@ echo -e "${GREEN}Installing Nginx${NC}"
 apt -v &> /dev/null && apt install -y nginx
 
 echo -e "${GREEN}Installing .NET Runtime 2.2${NC}"
-apt -v &> /dev/null && apt install -y dotnet-runtime-2.2
+apt -v &> /dev/null && ubuntu_version=$(lsb_release -r -s)
+apt -v &> /dev/null && wget https://packages.microsoft.com/config/ubuntu/${ubuntu_version}/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+apt -v &> /dev/null && dpkg -i packages-microsoft-prod.deb
+apt -v &> /dev/null && apt install -y dotnet-runtime-2.2 unzip
+which yum &> /dev/null && rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+which yum &> /dev/null && yum install -y dotnet-runtime-2.2 unzip
 
 # Install dependencies - yum
 echo -e "${GREEN}Installing Nginx${NC}"
@@ -81,10 +86,6 @@ which yum &> /dev/null && yum install -y epel-release
 which yum &> /dev/null && yum install -y nginx
 which yum &> /dev/null && sed -i $'/include /etc/nginx/conf.d/*.conf;/a \\\tclient_max_body_size 200m;\\\n\tproxy_buffer_size 16k;\\\n\tproxy_buffers 4 16k;\\\n\tserver_names_hash_bucket_size 64;\\\n\tinclude /etc/nginx/sites-enabled/*;' /etc/nginx/nginx.conf
 which yum &> /dev/null && systemctl start nginx
-
-echo -e "${GREEN}Installing .NET Runtime 2.2${NC}"
-which yum &> /dev/null && rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-which yum &> /dev/null && yum install -y dotnet-runtime-2.2
 
 # Download PRE
 echo -e "${GREEN}Downloading PRE...${NC}"
