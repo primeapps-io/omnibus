@@ -253,34 +253,53 @@ systemctl enable primeapps-admin.service
 # Create Nginx configurations for PrimeApps
 echo -e "${GREEN}Creating Nginx configurations...${NC}"
 
-# TODO: If PRIMEAPPS_SSL_CERTIFICATE and PRIMEAPPS_SSL_CERTIFICATEKEY is not empty, replace ssl_certificate and ssl_certificate_key in $basePath/nginx.conf files
-
 mkdir -p /etc/nginx/sites-available
 mkdir -p /etc/nginx/sites-enabled
 
-cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
-sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH
-cp $PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH
-ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_AUTH
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_AUTH.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH.conf
+sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_AUTH/g" $PRIMEAPPS_DOMAIN_AUTH.conf
 
-cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_APP
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_APP/g" $PRIMEAPPS_DOMAIN_APP
-sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_APP/g" $PRIMEAPPS_DOMAIN_APP
-cp $PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP
-ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_APP
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_APP.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_APP/g" $PRIMEAPPS_DOMAIN_APP.conf
+sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_APP/g" $PRIMEAPPS_DOMAIN_APP.conf
 
-cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_ADMIN
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN
-sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN
-cp $PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN
-ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_ADMIN
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_ADMIN.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
+sed -i "s/{{PORT}}/$PRIMEAPPS_PORT_ADMIN/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
 
-cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_STORAGE
-sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" $PRIMEAPPS_DOMAIN_STORAGE
-sed -i "s/{{PORT}}/9004/g" $PRIMEAPPS_DOMAIN_STORAGE
-cp $PRIMEAPPS_DOMAIN_STORAGE /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE
-ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_STORAGE
+cp "$basePath/nginx.conf" $PRIMEAPPS_DOMAIN_STORAGE.conf
+sed -i "s/{{DOMAIN}}/$PRIMEAPPS_DOMAIN_STORAGE/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
+sed -i "s/{{PORT}}/9004/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
+
+# Set SSL Certificate
+if [ "$PRIMEAPPS_SSL_USE" = "true" ] ; then
+    echo -e "${GREEN}Set SSL sertificate...${NC}"
+    sed -i "s/#//g" $PRIMEAPPS_DOMAIN_AUTH.conf
+    sed -i "s/{{CERTIFICATE}}/${PRIMEAPPS_SSL_CERTIFICATE//\//\\/}/g" $PRIMEAPPS_DOMAIN_AUTH.conf
+    sed -i "s/{{CERTIFICATEKEY}}/${PRIMEAPPS_SSL_CERTIFICATEKEY//\//\\/}/g" $PRIMEAPPS_DOMAIN_AUTH.conf
+    sed -i "s/#//g" $PRIMEAPPS_DOMAIN_APP.conf
+    sed -i "s/{{CERTIFICATE}}/${PRIMEAPPS_SSL_CERTIFICATE//\//\\/}/g" $PRIMEAPPS_DOMAIN_APP.conf
+    sed -i "s/{{CERTIFICATEKEY}}/${PRIMEAPPS_SSL_CERTIFICATEKEY//\//\\/}/g" $PRIMEAPPS_DOMAIN_APP.conf
+    sed -i "s/#//g" $PRIMEAPPS_DOMAIN_ADMIN.conf
+    sed -i "s/{{CERTIFICATE}}/${PRIMEAPPS_SSL_CERTIFICATE//\//\\/}/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
+    sed -i "s/{{CERTIFICATEKEY}}/${PRIMEAPPS_SSL_CERTIFICATEKEY//\//\\/}/g" $PRIMEAPPS_DOMAIN_ADMIN.conf
+    sed -i "s/#//g" $PRIMEAPPS_DOMAIN_STORAGE.conf
+    sed -i "s/{{CERTIFICATE}}/${PRIMEAPPS_SSL_CERTIFICATE//\//\\/}/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
+    sed -i "s/{{CERTIFICATEKEY}}/${PRIMEAPPS_SSL_CERTIFICATEKEY//\//\\/}/g" $PRIMEAPPS_DOMAIN_STORAGE.conf
+fi
+
+cp $PRIMEAPPS_DOMAIN_AUTH.conf /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH.conf
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_AUTH.conf /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_AUTH.conf
+
+cp $PRIMEAPPS_DOMAIN_APP.conf /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP.conf
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_APP.conf /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_APP.conf
+
+cp $PRIMEAPPS_DOMAIN_ADMIN.conf /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN.conf
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_ADMIN.conf /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_ADMIN.conf
+
+cp $PRIMEAPPS_DOMAIN_STORAGE.conf /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE.conf
+ln -s /etc/nginx/sites-available/$PRIMEAPPS_DOMAIN_STORAGE.conf /etc/nginx/sites-enabled/$PRIMEAPPS_DOMAIN_STORAGE.conf
 
 systemctl daemon-reload
 
