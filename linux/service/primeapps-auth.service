@@ -3,7 +3,7 @@ Description=PrimeApps Auth
 
 [Service]
 WorkingDirectory={{PRE_ROOT}}/PrimeApps.Auth
-ExecStart=/usr/bin/dotnet {{PRE_ROOT}}/PrimeApps.Auth/PrimeApps.Auth.dll --urls="http://localhost:{{PORT_AUTH}}"
+ExecStart=/usr/bin/dotnet {{PRE_ROOT}}/PrimeApps.Auth/PrimeApps.Auth.dll --urls=http://localhost:{{PORT_AUTH}} --run-as-service
 Restart=always
 # Restart service after 10 seconds if the dotnet service crashes:
 RestartSec=10
@@ -11,21 +11,21 @@ KillSignal=SIGINT
 SyslogIdentifier=primeapps-auth
 User={{USER}}
 Environment=DOTNET_PRINT_TELEMETRY_MESSAGE=false
-Environment=ASPNETCORE_ENVIRONMENT="Production"
-Environment=ConnectionStrings__AuthDBConnection="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=auth;command timeout=0;keepalive=30;maximum pool size=1000;"
-Environment=ConnectionStrings__TenantDBConnection="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=dev;command timeout=0;keepalive=30;maximum pool size=1000;"
-Environment=ConnectionStrings__PlatformDBConnection="server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;"
-Environment=ConnectionStrings__RedisConnection="localhost:6384,password={{PASSWORD_CACHE}},defaultDatabase=1,syncTimeout=30000"
-Environment=AppSettings__StorageUrl="{{URL_SCHEME}}{{DOMAIN_STORAGE}}"
-Environment=AppSettings__StorageAccessKey="{{STORAGE_ACCESSKEY}}"
-Environment=AppSettings__StorageSecretKey="{{STORAGE_SECRETKEY}}"
-Environment=AppSettings__Authority="{{URL_SCHEME}}{{DOMAIN_AUTH}}"
-Environment=AppSettings__ForwardHeaders="true"
-Environment=AppSettings__HttpsRedirection="{{HTTPS_REDIRECTION}}"
-Environment=Proxy__UseProxy="{{PROXY_USE}}"
-Environment=Proxy__ProxyUrl="{{PROXY_URL}}"
-Environment=Proxy__CertificateValidation="{{PROXY_VALIDATE_CERTIFICATE}}"
-Environment=AppSettings__SentryDsn="{{SENTRY_DSN_AUTH}}"
+Environment=ASPNETCORE_ENVIRONMENT=Production
+Environment=ConnectionStrings__AuthDBConnection=server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=auth;command timeout=0;keepalive=30;maximum pool size=1000;
+Environment=ConnectionStrings__TenantDBConnection=server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=dev;command timeout=0;keepalive=30;maximum pool size=1000;
+Environment=ConnectionStrings__PlatformDBConnection=server=localhost;port=5436;username=postgres;password={{PASSWORD_DATABASE}};database=platform;command timeout=0;keepalive=30;maximum pool size=1000;
+Environment=ConnectionStrings__RedisConnection=localhost:6384,password={{PASSWORD_CACHE}},defaultDatabase=1,syncTimeout=30000
+Environment=AppSettings__StorageUrl={{URL_SCHEME}}{{DOMAIN_STORAGE}}
+Environment=AppSettings__StorageAccessKey={{STORAGE_ACCESSKEY}}
+Environment=AppSettings__StorageSecretKey={{STORAGE_SECRETKEY}}
+Environment=AppSettings__Authority={{URL_SCHEME}}{{DOMAIN_AUTH}}
+Environment=AppSettings__ForwardHeaders=true
+Environment=AppSettings__HttpsRedirection={{HTTPS_REDIRECTION}}
+Environment=Proxy__UseProxy={{PROXY_USE}}
+Environment=Proxy__ProxyUrl={{PROXY_URL}}
+Environment=Proxy__CertificateValidation={{PROXY_VALIDATE_CERTIFICATE}}
+Environment=AppSettings__SentryDsn={{SENTRY_DSN_AUTH}}
 
 [Install]
 WantedBy=multi-user.target
