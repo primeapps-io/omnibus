@@ -31,7 +31,7 @@ Environment=AppSettings__DataDirectory={{PRE_ROOT}}/data
 Environment=Proxy__UseProxy={{PROXY_USE}}
 Environment=Proxy__ProxyUrl={{PROXY_URL}}
 Environment=Proxy__CertificateValidation={{PROXY_VALIDATE_CERTIFICATE}}
-Environment=AppSettings__SentryDsn={{SENTRY_DSN_ADMIN}}
+Environment=Sentry__Dsn={{SENTRY_DSN_ADMIN}}
     
 [Install]
 WantedBy=multi-user.target

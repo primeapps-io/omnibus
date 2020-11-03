@@ -25,7 +25,7 @@ Environment=AppSettings__HttpsRedirection={{HTTPS_REDIRECTION}}
 Environment=Proxy__UseProxy={{PROXY_USE}}
 Environment=Proxy__ProxyUrl={{PROXY_URL}}
 Environment=Proxy__CertificateValidation={{PROXY_VALIDATE_CERTIFICATE}}
-Environment=AppSettings__SentryDsn={{SENTRY_DSN_AUTH}}
+Environment=Sentry__Dsn={{SENTRY_DSN_AUTH}}
 
 [Install]
 WantedBy=multi-user.target
